@@ -3,6 +3,9 @@ import xml.etree.ElementTree as ET
 import shutil
 
 
+
+# 从xml中选出指定类别的图片
+
 def convert_annotation(year, image_id):
     in_file = open(os.path.join(VOCdevkit_path, 'VOC%s/Annotations/%s' % (year, image_id)), encoding='utf-8')
     tree = ET.parse(in_file)
@@ -23,11 +26,14 @@ def convert_annotation(year, image_id):
 if __name__ == "__main__":
     annotation_mode = 0
     VOCdevkit_path = r'D:\软考\VOC07+12+test\VOCdevkit'
+    
+    # 所想要的class
     classes = ['car','bottle','person']
     xml_id = []
 
     if annotation_mode == 0:
         print("Generate txt in ImageSets.")
+        # xml文件路径
         xmlfilepath = os.path.join(VOCdevkit_path, 'VOC2007\Annotations')
         saveBasePath = os.path.join(VOCdevkit_path, 'VOC2007\ImageSets\Main')
         temp_xml = os.listdir(xmlfilepath)
@@ -38,7 +44,8 @@ if __name__ == "__main__":
 
         for id_xml in total_xml:
             convert_annotation(2007, id_xml)
-
+    
+    # xml和img的新存放路径
     or_xml_path = VOCdevkit_path + '\VOC2007\Annotations\\'
     or_img_path = VOCdevkit_path + '\VOC2007\JPEGImages\\'
     new_xml_path = r'G:\VOC自选数据\Annotations\\'
