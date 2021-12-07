@@ -1,10 +1,10 @@
+# 转换图片格式
 import os
 import sys
-
 from PIL import Image
 
-input_folder = r'C:\Users\wwwwssssww\Downloads\result'  # 源文件夹，包含.png格式图片
-output_folder = r'C:\Users\wwwwssssww\Desktop\result'  # 输出文件夹
+input_folder = r'G:\chrome_download\img'  # 源文件夹，包含.png格式图片
+output_folder = r'C:\Users\wwwwssssww\Desktop\choosed'  # 输出文件夹
 # training_data=[]
 a = []
 for root, dirs, files in os.walk(input_folder):
