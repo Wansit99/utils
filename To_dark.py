@@ -11,23 +11,24 @@ from PIL import Image
 #         couple = (line+'_real_A'+'.png',line+'_fake_B'+'.png')
 #         txt.append(couple)
 
-input_folder = r'C:\Users\wwwwssssww\Desktop\choosed'  # 源文件夹，包含.jpg格式图片
-output_folder = r'C:\Users\wwwwssssww\Desktop\dark'  # 输出文件夹
+input_folder = r'G:\手动变黑img'  # 源文件夹，包含.jpg格式图片
+output_folder = r'G:\手动变黑'  # 输出文件夹
 a = []
 for root, dirs, files in os.walk(input_folder):
-    for filename in files:
-       a.append(filename[:10])
-    print(a)
+    for filename in (x for x in files):
 
-txt = list(set(a))
+        filepath = os.path.join(root, filename)
 
-for i in txt:
-    real_path = input_folder + "\\" + str(i) + '.jpg'
-    img_true = np.array(Image.open(real_path),dtype=np.float32)
+        object_class = filename
+        a.append(object_class)
 
-    img = img_true * 0.3
-    img[img<0] = 0
+for i in a:
+    real_path = input_folder + "\\" + str(i)
+    img_true = np.array(Image.open(real_path), dtype=np.float32)
+
+    img = img_true * 0.1
+    img[img < 0] = 0
     img = Image.fromarray(img.astype('uint8')).convert('RGB')
-    new_path = i
-    new_path = output_folder + "\\" + str(new_path) + '.jpg'
+    new_path = output_folder + "\\" + str(i)
     img.save(new_path)
+
