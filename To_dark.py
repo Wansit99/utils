@@ -11,8 +11,8 @@ from PIL import Image
 #         couple = (line+'_real_A'+'.png',line+'_fake_B'+'.png')
 #         txt.append(couple)
 
-input_folder = r'G:\手动变黑img'  # 源文件夹，包含.jpg格式图片
-output_folder = r'G:\手动变黑'  # 输出文件夹
+input_folder = r'G:\VOCdevkit\VOC2007\test'  # 源文件夹，包含.jpg格式图片
+output_folder = r'G:\VOCdevkit\VOC2007\dark'  # 输出文件夹
 a = []
 for root, dirs, files in os.walk(input_folder):
     for filename in (x for x in files):

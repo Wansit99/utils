@@ -4,8 +4,8 @@ import sys
 from PIL import Image
 from shutil import copy
 
-input_folder = r''  # 源文件夹，包含.png格式图片
-output_folder = r''   # 输出文件夹
+input_folder = r'D:\软考\VOCdevkit\VOC2007\JPEGImages'  # 源文件夹，包含.png格式图片
+output_folder = r'D:\软考\VOCdevkit\VOC2007\test'   # 输出文件夹
 
 a = []
 b = []

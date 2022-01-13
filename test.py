@@ -1,66 +1,70 @@
+import cv2 as cv
+import torch
+from  matplotlib import pyplot as plt
 import numpy as np
-import cv2
+import torch.nn.functional as F
+import torch.nn as nn
+from torch.utils.data.dataset import Dataset
+from torch.utils.data import DataLoader
+import os
 
-def auto_whiteBalance(img):
-    b, g, r = cv2.split(img)
-    Y = 0.299 * r + 0.587 * g + 0.114 * b
-    Cr = 0.5 * r - 0.419 * g - 0.081 * b
-    Cb = -0.169 * r - 0.331 * g + 0.5 * b
+dark = plt.imread('2015_01386_dark.jpg')
+light  = plt.imread('2015_01386.jpg')
 
-    Mr = np.mean(Cr)
-    Mb = np.mean(Cb)
+output_txt_dir = r'./kk.txt'  # 输出文件夹
+f = open(output_txt_dir, 'w')
 
-    Dr = np.var(Cr)
-    Db = np.var(Cb)
-
-    temp_arry = (np.abs(Cb - (Mb + Db * np.sign(Mb))) < 1.5 * Db) & (
-                np.abs(Cr - (1.5 * Mr + Dr * np.sign(Mr))) < 1.5 * Dr)
-    RL = Y * temp_arry
-
-    # 选取候选白点数的最亮10%确定为最终白点，并选择其前10%中的最小亮度值
-    L_list = list(np.reshape(RL, (RL.shape[0] * RL.shape[1],)).astype(np.uint8))
-    hist_list = np.zeros(256)
-    min_val = 0
-    sum = 0
-    for val in L_list:
-        hist_list[val] += 1
-
-    for l_val in range(255, 0, -1):
-        sum += hist_list[l_val]
-        if sum >= len(L_list) * 0.1:
-            min_val = l_val
-            break
-    # 取最亮的前10%为最终的白点
-    white_index = RL < min_val
-    RL[white_index] = 0
-
-    # 计算选取为白点的每个通道的增益
-    b[white_index] = 0
-    g[white_index] = 0
-    r[white_index] = 0
-
-    Y_max = np.max(RL)
-    b_gain = Y_max / (np.sum(b) / np.sum(b > 0))
-    g_gain = Y_max / (np.sum(g) / np.sum(g > 0))
-    r_gain = Y_max / (np.sum(r) / np.sum(r > 0))
-
-    b, g, r = cv2.split(img)
-    b = b * b_gain
-    g = g * g_gain
-    r = r * r_gain
-
-    # 溢出处理
-    b[b > 255] = 255
-    g[g > 255] = 255
-    r[r > 255] = 255
-
-    res_img = cv2.merge((b, g, r))
-    res_img = res_img.fromarray(img.astype('uint8')).convert('RGB')
-    return res_img
+class MyNet(nn.Module):
+    def __init__(self):
+        super(MyNet, self).__init__()  # 第一句话，调用父类的构造函数
+        np.random.seed(1)
+        self.init = torch.tensor(np.random.rand(1,1)).to(torch.float32)
+        self.dense = torch.nn.Linear(1, 1)
+        output_txt_dir = r'./kk.txt'  # 输出文件夹
+        self.f = open(output_txt_dir, 'w+')
 
 
-img_data = cv2.imread(r'C:\Users\wwwwssssww\Downloads\dark_result\2015_02434_fake_B.png')
-img = auto_whiteBalance(img_data)
-cv2.imshow('test',img)
-cv2.waitKey(0)
-#cv2.imwrite('1_auto.jpg', img)
+    def forward(self, x, y):
+        k = F.sigmoid(self.dense(self.init))
+        x =  torch.tensor(x).to(torch.float32)
+        y =  torch.tensor(y).to(torch.float32)
+        self.f.write(str(k.item())+'\n')
+        self.f.flush()
+        img = k*x + (1-k)*y
+        return img
+
+    def __del__(self):
+        self.f.close()
+        print("析构函数")
+
+
+net = MyNet()
+
+class LeafData(Dataset):  # 继承Dataset
+    def __init__(self):  # __init__是初始化该类的一些基础参数
+        self.length = 1
+        self.net = net
+
+    def __len__(self):  # 返回整个数据集的大小
+        return self.length
+
+    def __getitem__(self, index):  # 根据索引index返回dataset[index]
+        return self.net(light, dark)
+
+def my_loss(img):  #@save
+    return -torch.var(img)
+
+#net = MyNet()
+train_dataset = LeafData()
+gen = DataLoader(train_dataset, shuffle=True, batch_size=1, num_workers=1)
+trainer = torch.optim.SGD(net.parameters(), lr=0.03)
+
+for i in range(1):
+    for i, img in enumerate(train_dataset):
+        #img = net(light, dark)
+        l = my_loss(img)
+        l.backward()
+        trainer.step()
+        print(l)
+
+
