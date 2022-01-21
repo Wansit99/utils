@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 
 clses = []
 
-xml_path = r'C:\Users\wwwwssssww\Desktop\animal_dataset\VOC2007\Annotations'
+xml_path = r'C:\Users\wwwwssssww\Desktop\VOC2007\Annotations'
 
 temp_xml        = os.listdir(xml_path)
 total_xml       = []
