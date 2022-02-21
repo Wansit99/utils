@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 
 clses = []
 
-xml_path = r'C:\Users\wwwwssssww\Desktop\VOC2007\Annotations'
+xml_path = r'G:\chrome_download\data\xmlLabel1\Annotations'
 
 temp_xml        = os.listdir(xml_path)
 total_xml       = []
@@ -21,4 +21,9 @@ for name in total_xml:
         cls = obj.find('name').text
         clses.append(cls)
 
-print(list(set(clses)))
+result = list(set(clses))
+print(result)
+with open('cls_classes.txt',"w") as f:    #设置文件对象
+    for i in result:
+        f.write(i)
+        f.write('\n')
