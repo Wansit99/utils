@@ -1,39 +1,27 @@
-import smtplib
-from email.mime.text import MIMEText
-#设置服务器所需信息
-#163邮箱服务器地址
-mail_host = 'smtp.163.com'
-#163用户名
-mail_user = 'wansit999'
-#密码(部分邮箱为授权码)
-mail_pass = 'CUMULRJPOGVEXOAQ'
-#邮件发送方邮箱地址
-sender = 'wansit999@163.com'
-#邮件接受方邮箱地址，注意需要[]包裹，这意味着你可以写多个邮件地址群发
-receivers = ['804468570@qq.com']
+import cv2
+import time
+url = "http://cmgw-vpc.lechange.com:8888/LCO/6G00BC2PAZC74E9/0/0/20211104T063134/55414094b9e38f2ee07ad32a1d4e625d.m3u8"
+capture=cv2.VideoCapture(url)
 
-#设置email信息
-#邮件内容设置
-message = MIMEText('content','plain','utf-8')
-#邮件主题
-message['Subject'] = 'title'
-#发送方信息
-message['From'] = sender
-#接受方信息
-message['To'] = receivers[0]
+fps = 0.0
+while (True):
+    t1 = time.time()
+    # 读取某一帧
+    ref, frame = capture.read()
+    if not ref:
+        break
+    # 格式转变，BGRtoRGB
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    # RGBtoBGR满足opencv显示格式
+    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
-#登录并发送邮件
-try:
-    smtpObj = smtplib.SMTP()
-    #连接到服务器
-    smtpObj.connect(mail_host,25)
-    #登录到服务器
-    smtpObj.login(mail_user,mail_pass)
-    #发送
-    smtpObj.sendmail(
-        sender,receivers,message.as_string())
-    #退出
-    smtpObj.quit()
-    print('success')
-except smtplib.SMTPException as e:
-    print('error',e) #打印错误
+    fps = (fps + (1. / (time.time() - t1))) / 2
+    print("fps= %.2f" % (fps))
+    frame = cv2.putText(frame, "fps= %.2f" % (fps), (0, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+    cv2.imshow("video", frame)
+    c = cv2.waitKey(1) & 0xff
+
+    if c == 27:
+        capture.release()
+        break

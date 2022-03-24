@@ -1,176 +1,79 @@
-# importing libraries
-import tkinter as tk
-from tkinter import Message, Text
-import cv2
-import os
-import shutil
-import csv
+import torch
+import torchvision
+from torchvision.models.detection.roi_heads import fastrcnn_loss
+import torchvision.transforms.functional as TF
 import numpy as np
-from PIL import Image, ImageTk
-import pandas as pd
-import datetime
-import time
-import tkinter.ttk as ttk
-import tkinter.font as font
-from pathlib import Path
+from PIL import Image, ImageDraw, ImageFont
 
-window = tk.Tk()
-window.title("Face_Recogniser")
-window.configure(background='white')
-window.grid_rowconfigure(0, weight=1)
-window.grid_columnconfigure(0, weight=1)
-message = tk.Label(
-    window, text="Face-Recognition-System",
-    bg="green", fg="white", width=50,
-    height=3, font=('times', 30, 'bold'))
+# COCO数据集标签对照表
+COCO_CLASSES ={1: '人', 2: '自行车', 3: '汽车', 4: '摩托车', 5: '飞机',
+                   6: '公共汽车', 7: '火车', 8: '卡车', 9: '船', 10: '红绿灯',
+                   11: '消防栓', 13: '停车标志', 14: '停车计时器', 15: '长凳',
+                   16: '鸟', 17: '猫', 18: '狗', 19: '马', 20: '羊', 21: '牛',
+                   22: '大象', 23: '熊', 24: '斑马', 25: '长颈鹿', 27: '背包',
+                   28: 'umbrella', 31: 'handbag', 32: 'tie', 33: 'suitcase', 34: 'frisbee',
+                   35: 'skis', 36: 'snowboard', 37: 'sports ball', 38: 'kite', 39: 'baseball bat',
+                   40: 'baseball glove', 41: 'skateboard', 42: 'surfboard', 43: 'tennis racket',
+                   44: 'bottle', 46: '酒杯', 47: 'cup', 48: 'fork', 49: 'knife', 50: 'spoon',
+                   51: 'bowl', 52: 'banana', 53: 'apple', 54: 'sandwich', 55: 'orange',
+                   56: 'broccoli', 57: 'carrot', 58: 'hot dog', 59: 'pizza', 60: 'donut',
+                   61: 'cake', 62: 'chair', 63: 'couch', 64: 'potted plant', 65: 'bed', 67: 'dining table',
+                   70: 'toilet', 72: 'tv', 73: 'laptop', 74: 'mouse', 75: 'remote', 76: 'keyboard',
+                   77: 'cell phone', 78: 'microwave', 79: 'oven', 80: 'toaster', 81: 'sink',
+                   82: 'refrigerator', 84: 'book', 85: 'clock', 86: 'vase', 87: 'scissors',
+                   88: 'teddy bear', 89: 'hair drier', 90: 'toothbrush'}
 
-message.place(x=200, y=20)
+COLORS = ['#e6194b', '#3cb44b', '#ffe119', '#0082c8', '#f58231', '#911eb4', '#46f0f0', '#f032e6',
+            '#d2f53c', '#fabebe', '#008080', '#000080', '#aa6e28', '#fffac8', '#800000', '#aaffc3', '#808000',
+            '#ffd8b1', '#e6beff', '#808080']
 
+# 为每一个标签对应一种颜色，方便我们显示
+LABEL_COLOR_MAP = {k: COLORS[i%len(COLORS)] for i, k in enumerate(COCO_CLASSES.keys())}
 
-# The function below is used for checking
-# whether the text below is number or not ?
-def is_number(s):
-    try:
-        float(s)
-        return True
-    except ValueError:
-        pass
+# 判断GPU设备是否可用
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    try:
-        import unicodedata
-        unicodedata.numeric(s)
-        return True
-    except (TypeError, ValueError):
-        pass
+def faster_rcnn_detection(img_path):
+    # 加载pytorch自带的预训练Faster RCNN目标检测模型
+    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+    #torch.onnx.export(model, x, "faster_rcnn.onnx", opset_version=11)
+    model.to(device)
+    model.eval()
 
-    return False
+    # 读取输入图像，并转化为tensor
+    origin_img = Image.open(img_path, mode='r').convert('RGB')
+    img = TF.to_tensor(origin_img)
+    img = img.to(device)
 
+    # 将图像输入神经网络模型中，得到输出
+    output = model(img.unsqueeze(0))
 
-# Take Images is a function used for creating
-# the sample of the images which is used for
-# training the model. It takes 60 Images of
-# every new user.
-def encodImg():
-    # Both ID and Name is used for recognising the Image
-    Id = (txt.get())
-    name = (txt2.get())
+    labels = output[0]['labels'].cpu().detach().numpy()     # 预测每一个obj的标签
+    scores = output[0]['scores'].cpu().detach().numpy()     # 预测每一个obj的得分
+    bboxes = output[0]['boxes'].cpu().detach().numpy()      # 预测每一个obj的边框
+    # 这个我们只选取得分大于0.5的
+    obj_index = np.argwhere(scores>0.5).squeeze(axis=1).tolist()
 
-    # Checking if the ID is numeric and name is Alphabetical
-    if (is_number(Id) and name.isalpha()):
-        # Opening the primary camera if you want to access
-        # the secondary camera you can mention the number
-        # as 1 inside the parenthesis
-        cam = cv2.VideoCapture(0)
-        # Specifying the path to haarcascade file
-        harcascadePath = "data\haarcascade_frontalface_default.xml"
-        # Creating the classier based on the haarcascade file.
-        detector = cv2.CascadeClassifier(harcascadePath)
-        # Initializing the sample number(No. of images) as 0
-        sampleNum = 0
-        while (True):
-            # Reading the video captures by camera frame by frame
-            ret, img = cam.read()
-            # Converting the image into grayscale as most of
-            # the the processing is done in gray scale format
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # 使用ImageDraw将检测到的边框和类别打印在图片中，得到最终的输出
+    draw = ImageDraw.Draw(origin_img)
+    font = ImageFont.truetype('simhei.ttf', 15)
 
-            # It converts the images in different sizes
-            # (decreases by 1.3 times) and 5 specifies the
-            # number of times scaling happens
-            faces = detector.detectMultiScale(gray, 1.3, 5)
+    for i in obj_index:
+        box_location = bboxes[i].tolist()
+        draw.rectangle(xy=box_location, outline=LABEL_COLOR_MAP[labels[i]])
+        draw.rectangle(xy=[l + 1. for l in box_location], outline=LABEL_COLOR_MAP[labels[i]])
 
-            # For creating a rectangle around the image
-            for (x, y, w, h) in faces:
-                # Specifying the coordinates of the image as well
-                # as color and thickness of the rectangle.
-                # incrementing sample number for each image
-                cv2.rectangle(img, (x, y), (
-                    x + w, y + h), (255, 0, 0), 2)
-                sampleNum = sampleNum + 1
-                # saving the captured face in the dataset folder
-                # TrainingImage as the image needs to be trained
-                # are saved in this folder
-                cv2.imwrite(
-                    "TrainingImage\ " + name + "." + Id + '.' + str(
-                        sampleNum) + ".jpg", gray[y:y + h, x:x + w])
-                # display the frame that has been captured
-                # and drawn rectangle around it.
-                cv2.imshow('frame', img)
-            # wait for 100 milliseconds
-            if cv2.waitKey(100) & 0xFF == ord('q'):
-                break
-            # break if the sample number is more than 60
-            elif sampleNum > 60:
-                break
-        # releasing the resources
-        cam.release()
-        # closing all the windows
-        cv2.destroyAllWindows()
-        # Displaying message for the user
-        res = "Images Saved for ID : " + Id + " Name : " + name
+        text_size = font.getsize(COCO_CLASSES[labels[i]])
+        text_location = [box_location[0] + 2., box_location[1] - text_size[1]]
+        textbox_location = [box_location[0], box_location[1] - text_size[1], box_location[0] + text_size[0] + 4., box_location[1]]
+        draw.rectangle(xy=textbox_location, fill=LABEL_COLOR_MAP[labels[i]])
+        draw.text(xy=text_location, text=COCO_CLASSES[labels[i]], fill='white', font=font)
 
-        csvFile.close()
-        message.configure(text=res)
-    else:
-        if (is_number(Id)):
-            res = "Enter Alphabetical Name"
-            message.configure(text=res)
-        if (name.isalpha()):
-            res = "Enter Numeric Id"
-            message.configure(text=res)
+    del draw
+
+    origin_img.save("result.png")
 
 
+if __name__ == '__main__':
+    faster_rcnn_detection("test.jpg")
 
-# For testing phase
-def testImages():
-    recognizer = cv2.face.LBPHFaceRecognizer_create()
-    # Reading the trained model
-    recognizer.read("TrainingImageLabel\Trainner.yml")
-    harcascadePath = "data\haarcascade_frontalface_default.xml"
-    faceCascade = cv2.CascadeClassifier(harcascadePath)
-    # # getting the name from "userdetails.csv"
-    # df = pd.read_csv("UserDetails\UserDetails.csv")
-    # cam = cv2.VideoCapture(0)
-    # font = cv2.FONT_HERSHEY_SIMPLEX
-    # while True:
-    #     ret, im = cam.read()
-    #     gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    #     faces = faceCascade.detectMultiScale(gray, 1.2, 5)
-    #     for (x, y, w, h) in faces:
-    #         cv2.rectangle(im, (x, y), (x + w, y + h), (225, 0, 0), 2)
-    #         Id, conf = recognizer.predict(gray[y:y + h, x:x + w])
-    #         if (conf < 50):
-    #             aa = df.loc[df['Id'] == Id]['Name'].values
-    #             tt = str(Id) + "-" + aa
-    #         else:
-    #             Id = 'Unknown'
-    #             tt = str(Id)
-    #         if (conf > 75):
-    #             noOfFile = len(os.listdir("ImagesUnknown")) + 1
-    #             cv2.imwrite("ImagesUnknown\Image" +
-    #                         str(noOfFile) + ".jpg", im[y:y + h, x:x + w])
-    #         cv2.putText(im, str(tt), (x, y + h),
-    #                     font, 1, (255, 255, 255), 2)
-    #     cv2.imshow('im', im)
-    #     if (cv2.waitKey(1) == ord('q')):
-    #         break
-    cam.release()
-    cv2.destroyAllWindows()
-
-trainImg = tk.Button(window, text="encoding",
-                     command=encodImg, fg="white", bg="green",
-                     width=20, height=3, activebackground="Red",
-                     font=('times', 15, ' bold '))
-trainImg.place(x=200, y=500)
-testImg = tk.Button(window, text="Testing",
-                     command=testImages, fg="white", bg="green",
-                     width=20, height=3, activebackground="Red",
-                     font=('times', 15, ' bold '))
-testImg.place(x=650, y=500)
-quitWindow = tk.Button(window, text="Quit",
-                       command=window.destroy, fg="white", bg="green",
-                       width=20, height=3, activebackground="Red",
-                       font=('times', 15, ' bold '))
-quitWindow.place(x=1100, y=500)
-
-window.mainloop()

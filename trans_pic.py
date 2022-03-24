@@ -3,9 +3,11 @@ import os
 import sys
 from PIL import Image
 from shutil import copy
+from pathlib import Path
+from tqdm import tqdm
 
-input_folder = r'C:\Users\wwwwssssww\Documents\WeChat Files\wxid_g2m9t9zkcppw21\FileStorage\File\2022-02\pig_all_images'# 源文件夹，包含.png格式图片
-output_folder = r'C:\Users\wwwwssssww\Documents\WeChat Files\wxid_g2m9t9zkcppw21\FileStorage\File\2022-02\VOC2007\train_pig\JPEGImages'   # 输出文件夹
+input_folder = Path(r'G:\chrome_download\ssd-pytorch-master_\ssd-pytorch-master\VOCdevkit\VOC2007\JPGEImages')# 源文件夹，包含.png格式图片
+output_folder = Path(r'G:\chrome_download\ssd-pytorch-master_\ssd-pytorch-master\VOCdevkit\VOC2007\1')  # 输出文件夹
 
 a = []
 b = []
@@ -20,15 +22,15 @@ for root, dirs, files in os.walk(input_folder):
             object_class = filename
             a.append(object_class)
 
-for i in a:
-    old_path = input_folder + "\\" + str(i)
+for i in tqdm(a):
+    old_path = os.path.join(input_folder, str(i))
     i = i.split('.')[0]
-    new_path = output_folder + "\\" + str(i) + '.jpg'
+    new_path = os.path.join(output_folder, str(i)) + '.jpg'
     img = Image.open(old_path)
     img = img.convert('RGB')
     img.save(new_path)
 
-for i in b:
-    old_path = input_folder + "\\" + str(i)
-    new_path = output_folder + "\\" + str(i)
+for i in tqdm(b):
+    old_path = os.path.join(input_folder, str(i))
+    new_path = os.path.join(output_folder, str(i))
     copy(old_path, new_path)

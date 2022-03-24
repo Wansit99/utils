@@ -1,7 +1,9 @@
 import os
 import shutil
-path = r'H:\project\garbage_sorting\垃圾图片库'
-output_path = r'H:\project\garbage_sorting\垃圾图片'
+from pathlib import Path
+
+path = Path(r'H:\project\garbage_sorting\垃圾图片库')
+output_path = Path(r'H:\project\garbage_sorting\垃圾图片')
 
 for root, dirs, files in os.walk(path):
     for dir in dirs:

@@ -3,8 +3,8 @@ import random
 import xml.etree.ElementTree as ET
 
 clses = []
-
-xml_path = r'G:\chrome_download\data\xmlLabel1\Annotations'
+cls_num = {}
+xml_path = r'D:\软考\数据集\new\Annotations'
 
 temp_xml        = os.listdir(xml_path)
 total_xml       = []
@@ -20,9 +20,14 @@ for name in total_xml:
     for obj in root.iter('object'):
         cls = obj.find('name').text
         clses.append(cls)
+        if cls not in cls_num.keys():
+            cls_num[cls] = 1
+        else:
+            cls_num[cls] += 1
 
 result = list(set(clses))
 print(result)
+print(cls_num)
 with open('cls_classes.txt',"w") as f:    #设置文件对象
     for i in result:
         f.write(i)
