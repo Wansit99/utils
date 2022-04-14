@@ -2,10 +2,14 @@ from xml.etree.ElementTree import ElementTree, Element, parse
 import xml.etree.ElementTree as ET
 import os
 import shutil
+from tqdm import tqdm
 
-A_path = './Annotations'
-B_path = './Anno'
-Sum_path = './Fusing'
+# A的xml地址
+A_path = './Annotationss'
+# B的xml地址
+B_path = './xml/xmls'
+# 合并后的xml地址
+Sum_path = './Annotations'
 
 # 格式化
 def __indent(elem, level=0):
@@ -24,10 +28,10 @@ def __indent(elem, level=0):
             elem.tail = i
 
 
-for hole_xml in os.listdir(A_path):
+for hole_xml in tqdm(os.listdir(A_path)):
     # 将同名xml合并
     if os.path.exists(os.path.join(B_path,hole_xml)):
-        print('fusing',hole_xml)
+        #print('fusing',hole_xml)
         tree_hole = parse(os.path.join(A_path,hole_xml))
         root_hole = tree_hole.getroot()  # annotation
 
@@ -47,7 +51,7 @@ for hole_xml in os.listdir(A_path):
 
 
 # 将不同名xml复制
-for arm_xml in os.listdir(B_path):
+for arm_xml in tqdm(os.listdir(B_path)):
     if not os.path.exists(os.path.join(Sum_path,arm_xml)):
-        print('copying')
+        #print('copying')
         shutil.copy(os.path.join(B_path, arm_xml), Sum_path)
