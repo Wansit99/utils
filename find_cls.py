@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 
 clses = []
 cls_num = {}
-xml_path = r'D:\软考\数据集\new\Annotations'
+xml_path = r'J:\BaiduNetdiskDownload\people_crowded\data\datasets\VOC2007\Annotations'
 
 temp_xml        = os.listdir(xml_path)
 total_xml       = []

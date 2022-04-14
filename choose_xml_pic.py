@@ -25,8 +25,8 @@ def convert_annotation(year, image_id):
 
 if __name__ == "__main__":
     annotation_mode = 0
-    VOCdevkit_path = r'D:\软考\hands'
-    new_path = r'D:\软考\new'
+    VOCdevkit_path = r'D:\软考\VOC07+12+test\VOCdevkit\VOC2007'
+    new_path = r'D:\软考\VOC07+12+test\VOCdevkit\car'
     if not os.path.exists(os.path.join(new_path, 'VOC2007')):
         os.makedirs(os.path.join(new_path, 'VOC2007'))
     if not os.path.exists(os.path.join(new_path, 'VOC2007', 'Annotations')):
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
 
     # 所想要的class
-    classes = ['five','four', 'three', 'two','one']
+    classes = ['car']
     xml_id = []
 
     if annotation_mode == 0:

@@ -28,12 +28,12 @@ def convert_annotation(year, image_id):
 if __name__ == "__main__":
     annotation_mode = 0
     # 原数据集地址
-    VOCdevkit_path = r'./VOCdevkit'
+    VOCdevkit_path = r'G:\chrome_download\CODEBRIM_original_images'
     # 保存在哪里
-    new_path = r'./result'
+    new_path = r'G:\chrome_download\wanted'
     # 所想要的class
     # classes = ['pn', 'p11', 'pne', 'pl5', 'p12']
-    classes = ['person', 'car']
+    classes = ['defectww', 'defect']
     xml_id = []
     # 保留的百分比
     k = 1

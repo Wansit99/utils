@@ -52,10 +52,10 @@ def txtLabel_to_xmlLabel(classes_file,source_txt_path,source_img_path,save_xml_p
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--classes_file', type=str, default="person.names")
-    parser.add_argument('--source_txt_path', type=str, default=r"G:\chrome_download\txt-xml\labels")
-    parser.add_argument('--source_img_path', type=str, default=r"G:\chrome_download\txt-xml\images")
-    parser.add_argument('--save_xml_path', type=str, default=r"G:\chrome_download\txt-xml\save_xml_path")
+    parser.add_argument('--classes_file', type=str, default="types.names")
+    parser.add_argument('--source_txt_path', type=str, default=r"C:\Users\wwwwssssww\Downloads\PKLot停车位识别yolov5pytorch数据集\valid\labels")
+    parser.add_argument('--source_img_path', type=str, default=r"C:\Users\wwwwssssww\Downloads\PKLot停车位识别yolov5pytorch数据集\valid\images")
+    parser.add_argument('--save_xml_path', type=str, default=r"C:\Users\wwwwssssww\Downloads\PKLot停车位识别yolov5pytorch数据集\valid\xml")
     opt = parser.parse_args()
 
     txtLabel_to_xmlLabel(opt.classes_file,opt.source_txt_path,opt.source_img_path,opt.save_xml_path)
