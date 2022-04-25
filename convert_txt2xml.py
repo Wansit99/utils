@@ -2,17 +2,20 @@ import os, sys
 import glob
 from PIL import Image
 import argparse
+from tqdm import tqdm
+classes = ['insulator', 'defect']
 
-def txtLabel_to_xmlLabel(classes_file,source_txt_path,source_img_path,save_xml_path):
+
+def txtLabel_to_xmlLabel(source_txt_path,source_img_path,save_xml_path):
     if not os.path.exists(save_xml_path):
         os.makedirs(save_xml_path)
-    classes = open(classes_file).read().splitlines()
+    # classes = open(classes_file).read().splitlines()
     print(classes)
-    for file in os.listdir(source_txt_path):
+    for file in tqdm(os.listdir(source_txt_path)):
         img_path = os.path.join(source_img_path,file.replace('.txt','.jpg')) #png to jpg
         img_file = Image.open(img_path)
         txt_file = open(os.path.join(source_txt_path,file)).read().splitlines()
-        print(txt_file)
+        # print(txt_file)
         xml_file = open(os.path.join(save_xml_path,file.replace('.txt','.xml')), 'w')
         width, height = img_file.size
         xml_file.write('<annotation>\n')
@@ -25,7 +28,7 @@ def txtLabel_to_xmlLabel(classes_file,source_txt_path,source_img_path,save_xml_p
         xml_file.write('\t</size>\n')
 
         for line in txt_file:
-            print(line)
+            # print(line)
             line_split = line.split(' ')
             x_center = float(line_split[1])
             y_center = float(line_split[2])
@@ -52,10 +55,9 @@ def txtLabel_to_xmlLabel(classes_file,source_txt_path,source_img_path,save_xml_p
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--classes_file', type=str, default="types.names")
-    parser.add_argument('--source_txt_path', type=str, default=r"C:\Users\wwwwssssww\Downloads\PKLot停车位识别yolov5pytorch数据集\valid\labels")
-    parser.add_argument('--source_img_path', type=str, default=r"C:\Users\wwwwssssww\Downloads\PKLot停车位识别yolov5pytorch数据集\valid\images")
-    parser.add_argument('--save_xml_path', type=str, default=r"C:\Users\wwwwssssww\Downloads\PKLot停车位识别yolov5pytorch数据集\valid\xml")
+    parser.add_argument('--source_txt_path', type=str, default=r"D:\软考\数据集\VOC2007\labels\train")
+    parser.add_argument('--source_img_path', type=str, default=r"D:\软考\数据集\VOC2007\JPEGImages")
+    parser.add_argument('--save_xml_path', type=str, default=r"D:\软考\数据集\VOC2007\xml")
     opt = parser.parse_args()
 
-    txtLabel_to_xmlLabel(opt.classes_file,opt.source_txt_path,opt.source_img_path,opt.save_xml_path)
+    txtLabel_to_xmlLabel(opt.source_txt_path,opt.source_img_path,opt.save_xml_path)

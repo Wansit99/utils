@@ -4,8 +4,9 @@ import random
 from shutil import copy
 from tqdm import tqdm
 import shutil
+import cv2
 
-classes = ['insulator', 'defect']
+classes = ['fall']
 # classes=["ball"]
 
 # 训练集 验证集 测试集比例
@@ -43,12 +44,18 @@ def convert(size, box):
 def convert_annotation(label_path, xml_path):
     in_file = open(xml_path)
     out_file = open(label_path, 'w')
+    #     print(xml_path)
     out_tmp = set()
     tree = ET.parse(in_file)
     root = tree.getroot()
     size = root.find('size')
     w = int(size.find('width').text)
     h = int(size.find('height').text)
+
+    if w <= 0 or h <= 0:
+        tmp_img_path = xml_path.split('.')[0].split('/')[-1]
+        tmp_img = cv2.imread(os.path.join(dirs, 'JPEGImages', tmp_img_path + '.jpg'))
+        h, w, c = tmp_img.shape
 
     for obj in root.iter('object'):
         difficult = obj.find('difficult').text
@@ -73,7 +80,7 @@ def convert_annotation(label_path, xml_path):
 wd = os.getcwd()
 wd = os.getcwd()
 
-dirs = r'VOCdevkit/VOC2007'
+dirs = r'all'
 if os.path.isdir(os.path.join(dirs, "labels")):
     shutil.rmtree(os.path.join(dirs, "labels"), True)
 if not os.path.isdir(os.path.join(dirs, "labels")):
