@@ -3,7 +3,21 @@ import glob
 from PIL import Image
 import argparse
 from tqdm import tqdm
-classes = ['insulator', 'defect']
+classes = ['computer',
+'phone',
+'earphones',
+'eat',
+'sleep',
+'talk',
+'leave',
+'drink',
+'read',
+'write',
+'listen',
+'touch_face',
+'yawn',
+'rest',
+'hand_up']
 
 
 def txtLabel_to_xmlLabel(source_txt_path,source_img_path,save_xml_path):
@@ -55,9 +69,9 @@ def txtLabel_to_xmlLabel(source_txt_path,source_img_path,save_xml_path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--source_txt_path', type=str, default=r"D:\软考\数据集\VOC2007\labels\train")
-    parser.add_argument('--source_img_path', type=str, default=r"D:\软考\数据集\VOC2007\JPEGImages")
-    parser.add_argument('--save_xml_path', type=str, default=r"D:\软考\数据集\VOC2007\xml")
+    parser.add_argument('--source_txt_path', type=str, default=r"J:\BaiduNetdiskDownload\yolov5_0425\mydataset\labels\train")
+    parser.add_argument('--source_img_path', type=str, default=r"J:\BaiduNetdiskDownload\yolov5_0425\mydataset\images\train")
+    parser.add_argument('--save_xml_path', type=str, default=r"J:\BaiduNetdiskDownload\yolov5_0425\mydataset\labels\xml")
     opt = parser.parse_args()
 
     txtLabel_to_xmlLabel(opt.source_txt_path,opt.source_img_path,opt.save_xml_path)

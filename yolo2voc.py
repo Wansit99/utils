@@ -14,11 +14,9 @@ def clear_hidden_files(path):
             clear_hidden_files(abspath)
 
 
-dirs = r'pcb/pcb'
+dirs = r'C:\Users\wwwwssssww\Downloads\result (3)\fall'
 
-wd = os.getcwd()
-wd = os.getcwd()
-data_base_dir = os.path.join(wd, "VOCdevkit/")
+data_base_dir = os.path.join(dirs, "VOCdevkit/")
 if not os.path.isdir(data_base_dir):
     os.mkdir(data_base_dir)
 work_sapce_dir = os.path.join(data_base_dir, "VOC2007/")
@@ -44,14 +42,14 @@ list_train_img = os.listdir(os.path.join(list_img_path, 'train'))
 list_val_img = os.listdir(os.path.join(list_img_path, 'val'))
 list_test_img = os.listdir(os.path.join(list_img_path, 'test'))
 
-# for i in tqdm(list_train_img):
-#     copy(os.path.join(list_img_path, 'train', i), os.path.join(JPEGImages_dir, i))
-#
-# for i in tqdm(list_val_img):
-#     copy(os.path.join(list_img_path, 'val', i), os.path.join(JPEGImages_dir, i))
-#
-# for i in tqdm(list_test_img):
-#     copy(os.path.join(list_img_path, 'val', i), os.path.join(JPEGImages_dir, i))
+for i in tqdm(list_train_img):
+    copy(os.path.join(list_img_path, 'train', i), os.path.join(JPEGImages_dir, i))
+
+for i in tqdm(list_val_img):
+    copy(os.path.join(list_img_path, 'val', i), os.path.join(JPEGImages_dir, i))
+
+for i in tqdm(list_test_img):
+    copy(os.path.join(list_img_path, 'test', i), os.path.join(JPEGImages_dir, i))
 
 ftrainval   = open(os.path.join(Main_dir,'trainval.txt'), 'w')
 ftest       = open(os.path.join(Main_dir,'test.txt'), 'w')
@@ -59,26 +57,47 @@ ftrain      = open(os.path.join(Main_dir,'train.txt'), 'w')
 fval        = open(os.path.join(Main_dir,'val.txt'), 'w')
 
 list_anno_path = os.path.join(dirs, 'Annotations')
-list_train_anno = os.listdir(os.path.join(list_anno_path, 'train'))
-list_val_anno = os.listdir(os.path.join(list_anno_path, 'val'))
-list_test_anno = os.listdir(os.path.join(list_anno_path, 'test'))
+# list_train_anno = os.listdir(os.path.join(list_anno_path, 'train'))
+# list_val_anno = os.listdir(os.path.join(list_anno_path, 'val'))
+# list_test_anno = os.listdir(os.path.join(list_anno_path, 'test'))
 
-for i in tqdm(list_train_anno):
+# for i in tqdm(list_train_anno):
+#     name = i.split('.')[0] + '\n'
+#     ftrainval.write(name)
+#     ftrain.write(name)
+#     copy(os.path.join(list_anno_path, 'train', i), os.path.join(annotation_dir, i))
+#
+# for i in tqdm(list_val_anno):
+#     name = i.split('.')[0] + '\n'
+#     ftrainval.write(name)
+#     fval.write(name)
+#     copy(os.path.join(list_anno_path, 'val', i), os.path.join(annotation_dir, i))
+#
+# for i in tqdm(list_test_anno):
+#     name = i.split('.')[0] + '\n'
+#     ftest.write(name)
+#     copy(os.path.join(list_anno_path, 'test', i), os.path.join(annotation_dir, i))
+
+
+for i in tqdm(list_train_img):
     name = i.split('.')[0] + '\n'
     ftrainval.write(name)
     ftrain.write(name)
-    copy(os.path.join(list_anno_path, 'train', i), os.path.join(annotation_dir, i))
+    xml_name = i.split('.')[0] + '.xml'
+    copy(os.path.join(list_anno_path, xml_name), os.path.join(annotation_dir, xml_name))
 
-for i in tqdm(list_val_anno):
+for i in tqdm(list_val_img):
     name = i.split('.')[0] + '\n'
     ftrainval.write(name)
     fval.write(name)
-    copy(os.path.join(list_anno_path, 'val', i), os.path.join(annotation_dir, i))
+    xml_name = i.split('.')[0] + '.xml'
+    copy(os.path.join(list_anno_path, xml_name), os.path.join(annotation_dir, xml_name))
 
-for i in tqdm(list_test_anno):
+for i in tqdm(list_test_img):
     name = i.split('.')[0] + '\n'
     ftest.write(name)
-    copy(os.path.join(list_anno_path, 'test', i), os.path.join(annotation_dir, i))
+    xml_name = i.split('.')[0] + '.xml'
+    copy(os.path.join(list_anno_path, xml_name), os.path.join(annotation_dir, xml_name))
 
 
 
