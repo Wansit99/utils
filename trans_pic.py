@@ -6,8 +6,8 @@ from shutil import copy
 from pathlib import Path
 from tqdm import tqdm
 
-input_folder = Path(r'G:\chrome_download\ssd-pytorch-master_\ssd-pytorch-master\VOCdevkit\VOC2007\JPGEImages')# 源文件夹，包含.png格式图片
-output_folder = Path(r'G:\chrome_download\ssd-pytorch-master_\ssd-pytorch-master\VOCdevkit\VOC2007\1')  # 输出文件夹
+input_folder = Path(r'J:\BaiduNetdiskDownload\图片\JPEGImages')# 源文件夹，包含.png格式图片
+output_folder = Path(r'J:\BaiduNetdiskDownload\图片\1')  # 输出文件夹
 
 a = []
 b = []
@@ -24,7 +24,8 @@ for root, dirs, files in os.walk(input_folder):
 
 for i in tqdm(a):
     old_path = os.path.join(input_folder, str(i))
-    i = i.split('.')[0]
+    # i = i.split('.')[:-1]
+    i = i[:-4]
     new_path = os.path.join(output_folder, str(i)) + '.jpg'
     img = Image.open(old_path)
     img = img.convert('RGB')

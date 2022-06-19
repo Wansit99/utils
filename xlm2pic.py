@@ -33,7 +33,7 @@ if __name__ == "__main__":
     new_path = r'G:\chrome_download\wanted'
     # 所想要的class
     # classes = ['pn', 'p11', 'pne', 'pl5', 'p12']
-    classes = ['defectww', 'defect']
+    classes = ['cr', 'ex', 'sp']
     xml_id = []
     # 保留的百分比
     k = 1

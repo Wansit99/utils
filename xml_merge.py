@@ -5,11 +5,11 @@ import shutil
 from tqdm import tqdm
 
 # A的xml地址
-A_path = './Annotationss'
+A_path = r'C:\Users\wwwwssssww\Downloads\基于航拍图像的绝缘子缺陷检测方法-1742531216-技术小c\Insulators-main\InsulatorDataSet\Defective_Insulators\labels\defect'
 # B的xml地址
-B_path = './xml/xmls'
+B_path = r'C:\Users\wwwwssssww\Downloads\基于航拍图像的绝缘子缺陷检测方法-1742531216-技术小c\Insulators-main\InsulatorDataSet\Defective_Insulators\labels\insulator'
 # 合并后的xml地址
-Sum_path = './Annotations'
+Sum_path = r'C:\Users\wwwwssssww\Downloads\基于航拍图像的绝缘子缺陷检测方法-1742531216-技术小c\Insulators-main\InsulatorDataSet\Defective_Insulators\labels\all'
 
 # 格式化
 def __indent(elem, level=0):

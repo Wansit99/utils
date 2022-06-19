@@ -6,12 +6,25 @@ from tqdm import tqdm
 import shutil
 import cv2
 
-classes = ['fall']
+classes = [ 'grub',
+'mole cricket',
+'wireworm0',
+'wireworm1',
+'black cutworm0',
+'black cutworm1',
+# 'corn borer0',
+'corn borer1',
+# 'army worm0',
+# 'army worm1 ',
+# 'aphids',
+# 'peach borer0',
+'peach borer1'
+]
 # classes=["ball"]
 
 # 训练集 验证集 测试集比例
-train_k = 0.9
-val_k = 0.8888888888
+train_k = 0.8
+val_k = 0.75
 
 random.seed(0)
 
@@ -75,6 +88,11 @@ def convert_annotation(label_path, xml_path):
 
     in_file.close()
     out_file.close()
+    
+    if len(out_tmp) == 0:
+        return False
+    else:
+        return True
 
 
 wd = os.getcwd()
@@ -143,9 +161,11 @@ for i in tqdm(range(0, len(list_train))):
     xml_path = os.path.join(dirs, 'Annotations', annotation_name)
 
     train_file.write(image_path + '\n')
-    convert_annotation(label_path, xml_path)  # convert label
+    tag = convert_annotation(label_path, xml_path)  # convert label
     new_path = os.path.join(jpg_train_dir, list_train[i])
-    copy(image_path, new_path)
+    if tag:
+        copy(image_path, new_path)
+    
 
 for i in tqdm(range(0, len(list_val))):
     image_path = os.path.join(jpg_dir, list_val[i])
@@ -158,9 +178,10 @@ for i in tqdm(range(0, len(list_val))):
     xml_path = os.path.join(dirs, 'Annotations', annotation_name)
 
     val_file.write(image_path + '\n')
-    convert_annotation(label_path, xml_path)  # convert label
+    tag = convert_annotation(label_path, xml_path)  # convert label
     new_path = os.path.join(jpg_val_dir, list_val[i])
-    copy(image_path, new_path)
+    if tag:
+        copy(image_path, new_path)
 
 for i in tqdm(range(0, len(list_test))):
     image_path = os.path.join(jpg_dir, list_test[i])
@@ -173,9 +194,10 @@ for i in tqdm(range(0, len(list_test))):
     xml_path = os.path.join(dirs, 'Annotations', annotation_name)
 
     test_file.write(image_path + '\n')
-    convert_annotation(label_path, xml_path)  # convert label
+    tag = convert_annotation(label_path, xml_path)  # convert label
     new_path = os.path.join(jpg_test_dir, list_test[i])
-    copy(image_path, new_path)
+    if tag:
+        copy(image_path, new_path)
 
 train_file.close()
 val_file.close()
