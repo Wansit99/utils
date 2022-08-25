@@ -25,8 +25,8 @@ def convert_annotation(year, image_id):
 
 if __name__ == "__main__":
     annotation_mode = 0
-    VOCdevkit_path = r'D:\软考\VOC07+12+test\VOCdevkit\VOC2007'
-    new_path = r'D:\软考\VOC07+12+test\VOCdevkit\car'
+    VOCdevkit_path = r'VOC2007'
+    new_path = r'wanted'
     if not os.path.exists(os.path.join(new_path, 'VOC2007')):
         os.makedirs(os.path.join(new_path, 'VOC2007'))
     if not os.path.exists(os.path.join(new_path, 'VOC2007', 'Annotations')):
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
 
     # 所想要的class
-    classes = ['car']
+    classes = ['waiting', 'failure']
     xml_id = []
 
     if annotation_mode == 0:
@@ -59,16 +59,16 @@ if __name__ == "__main__":
             convert_annotation(2007, id_xml)
 
     # xml和img的新存放路径
-    or_xml_path = os.path.join(VOCdevkit_path, 'Annotations\\')
-    or_img_path = os.path.join(VOCdevkit_path, 'JPEGImages\\')
-    new_xml_path = os.path.join(new_path, 'VOC2007', 'Annotations\\')
-    new_img_path = os.path.join(new_path, 'VOC2007', 'JPEGImages\\')
+    or_xml_path = os.path.join(VOCdevkit_path, 'Annotations')
+    or_img_path = os.path.join(VOCdevkit_path, 'JPEGImages')
+    new_xml_path = os.path.join(new_path, 'VOC2007', 'Annotations')
+    new_img_path = os.path.join(new_path, 'VOC2007', 'JPEGImages')
 
     print(len(xml_id))
     for i in tqdm(xml_id):
-        shutil.copy(or_xml_path + i, new_xml_path + i)
+        shutil.copy(os.path.join(or_xml_path, i), os.path.join(new_xml_path, i))
         img_id = i[:-4] + '.jpg'
-        shutil.copy(or_img_path + img_id, new_img_path + img_id)
+        shutil.copy(os.path.join(or_img_path, img_id), os.path.join(new_img_path, img_id))
 
 
 

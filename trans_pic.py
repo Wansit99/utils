@@ -6,8 +6,8 @@ from shutil import copy
 from pathlib import Path
 from tqdm import tqdm
 
-input_folder = Path(r'J:\BaiduNetdiskDownload\图片\JPEGImages')# 源文件夹，包含.png格式图片
-output_folder = Path(r'J:\BaiduNetdiskDownload\图片\1')  # 输出文件夹
+input_folder = Path(r'J:\WeChat Files\wxid_g2m9t9zkcppw21\FileStorage\File\2022-08\0815\数据集')# 源文件夹，包含.png格式图片
+output_folder = Path(r'J:\WeChat Files\wxid_g2m9t9zkcppw21\FileStorage\File\2022-08\0815\ww')  # 输出文件夹
 
 a = []
 b = []
